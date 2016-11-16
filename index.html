@@ -2,93 +2,143 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="" itemscope itemtype="" ng-app="helloWorld"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="" ng-app="helloWorld"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title itemprop='name'>Agenda Telefônica</title>
+        <title>Agenda Telefônica</title>
 
         <meta name="description" content="">
         <meta name="robots" content="index,follow"/> 
         <meta name="keywords" content="">
         
-        <link rel="pingback" href="">
-        <link rel="canonical" href="" /> 
-        <link rel="author" href="" />
-        <link rel="publisher" href="" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
         <script src="js/angular.min.js"></script>
         
         <script>
-            angular.module('helloWorld', []);//criou um módulo
+            angular.module('helloWorld', []); //criou um módulo
+
+            //registrando o módulo
             angular.module('helloWorld').controller('helloWorldCtrl', function($scope){
                 $scope.titulo = "Agenda Telefônica";
+
+                //array de contatos
+                $scope.contatos = [
+                    {nome:'Lucas Barbosa', telefone: '99999-9988', cor: 'blue'},
+                    {nome:'Silvia Barbosa', telefone: '99999-9985', cor: 'yellow'},
+                    {nome:'Oscar Henrique', telefone: '99999-9986', cor: 'red'}
+                ];
+
+                //array de operadoras
+                $scope.operadoras = [
+                    {nome: 'Vivo', codigo: 15, categoria: 'Celular'},
+                    {nome: 'Claro', codigo: 23, categoria: 'Celular'},
+                    {nome: 'Tim', codigo: 41, categoria: 'Celular'},
+                    {nome: 'Oi', codigo: 24, categoria: 'Fixo'},
+                    {nome: 'Embratel', codigo: 21, categoria: 'Fixo'},
+
+                ];
+
+                //função para adicionar contato
+                $scope.adicionarContato = function(contato){
+                    $scope.contatos.push(angular.copy(contato));
+                    delete $scope.contato;
+                    $scope.contatoForm.$setPristine();//volta os inputs como nunca tocados
+                };
+
+
+                //função para apagar contato
+                $scope.apagarContato = function(contatos){
+                   $scope.contatos = contatos.filter(function(contato) {
+                       if (!contato.selecionado) return contato;
+                       
+                   });
+
+                };
+
+
+                //função para selecionar e aparecer botão de remover
+                $scope.isSelecionado = function(contatos){
+                    return contatos.some(function(contato){
+                        return contato.selecionado;
+                    });
+
+                };
+
+                //atribuindo classe para o selecionado
+                $scope.selecionado = 'selecionado';
+                $scope.selecionado = 'sublinhado';
+
             });
         </script>
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/main.css">
-
-        <!-- /.GOOGLE PLUS -->
-        <meta itemprop="name" content=""/>
-        <meta itemprop="description" content="" />
-        <meta itemprop="image" content=""/>
-        <meta itemprop="sameAs" content=""/>
-
-      
-        <!-- /.FACEBOOK -->
-        <meta property="og:site_name" content="" />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content="" />
-        <meta property="og:description" content="" />
-        <meta property="og:image" content="" />
-        <meta property="og:url" content="" />
-        <meta property="og:locale" content="pt_BR" />        
-        <meta property="og:app_id" content="" />
-        <meta property="article:author" content="" />
-        <meta property="article:publisher" content="" />
-
-
-        <!-- /.TWITTER -->
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:site" content=""/>
-        <meta name="twitter:domain" content=""/>
-        <meta name="twitter:title" content=""/>
-        <meta name="twitter:description" content=""/>
-        <meta name="twitter:image:src" content=""/>
-        <meta name="twitter:url" content=""/>
-
-         <!-- Fav and touch icons -->
-        <link rel="icon" type="image/png" href="" sizes="16x16"> 
-        <link rel="icon" href="favicon-16.png" sizes="16x16">
-        <link rel="icon" href="favicon-32.png" sizes="32x32">
-        <link rel="icon" href="favicon-48.png" sizes="48x48">
-        <link rel="icon" href="favicon-64.png" sizes="64x64">
-        <link rel="icon" href="favicon-128.png" sizes="128x128">
-
-        <!-- iPad com Retina Display -->
-        <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
-        <!-- iPhone com Retina Display -->
-        <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
-        <!-- Primeira e segunda geração de iPad -->
-        <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
-        <!-- Versões antigas de iPhone, iPod Touch e Android 2.2+  -->
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
     </head>
+
+
     <body ng-controller="helloWorldCtrl">
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+
+
 
         <div class="jumbotron">
-            <h4>{{titulo}}</h4>
+            <h3>{{titulo}}</h3>
+
+            <table class="table table-striped" ng-show="contatos.length > 0">
+                <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Operadora</th>
+                    <th></th>
+                </tr>
+                <tr ng-class="{selecionado: contato.selecionado}" ng-repeat="contato in contatos">
+                    <td><input type="checkbox" ng-model="contato.selecionado"></td>
+                    <td>{{contato.nome}}</td>
+                    <td>{{contato.telefone}}</td>
+                    <td>{{contato.operadora.nome}}</td>
+                    <td><div class="cores" ng-style="{'background-color': contato.cor}"></div></td>
+                    <!-- <td ng-repeat="(key,value) in contato">{{key +' - '+ value}}</td> -->
+                </tr>
+            </table>
+            <hr>
+
+            <form name="contatoForm">
+
+                <input type="text" ng-model="contato.nome" class="form-control" name="nome" placeholder="Digite o nome..." ng-required="true" ng-minlength="10">
+
+                <input type="text" ng-model="contato.telefone" class="form-control" name="telefone" placeholder="Digite o telefone..." ng-required="true" ng-pattern="//" >
+
+                <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+                    <option value="">Selecione uma operadora</option>
+                </select>
+
+                <button ng-click="adicionarContato(contato)" ng-disabled="contatoForm.$invalid" class="btn btn-primary btn-block">Adicionar Contato</button>
+                
+                <button ng-click="apagarContato(contatos)" class="btn btn-danger btn-block" ng-if="isSelecionado(contatos)">Apagar Contato</button>
+
+            </form>
+
+            <div ng-show="contatoForm.nome.$error.required && contatoForm.nome.$dirty" class="alert alert-danger">
+                <p>Preencha o nome!</p> <!--só mostra se o campo foi digitado -->
+            </div>
+
+            <div ng-show="contatoForm.nome.$error.minlength" class="alert alert-danger">
+                <p>O campo nome deve ter no mínimo 10 caracteres!</p> <!--só mostra se o campo foi digitado -->
+            </div>
+
+            <div ng-show="contatoForm.telefone.$invalid && contatoForm.nome.$dirty" class="alert alert-danger">
+                <p>Preencha o telefone</p> <!--só mostra se o campo foi digitado -->
+            </div>
+
         </div>
 
-            
+        <!-- Incluindo Footer -->
+        <div ng-include="'footer.html'"></div>
 
         <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/jquery-3.1.0.min.js"><\/script>')</script>

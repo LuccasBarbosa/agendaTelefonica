@@ -1,12 +1,40 @@
-*{
-	margin: 0;
-	padding: 0;
-}
-
 .jumbotron{
-	width: 600px;
-	text-align: center;
+	width: 500px;
 	margin-top: 20px;
 	margin-left: auto;
 	margin-right: auto;
+	padding: 30px;
+}
+
+.jumbotron h3{
+	padding-bottom: 20px;
+}
+
+.jumbotron h3{
+	text-align: center;
+}
+
+.form-control{
+	margin-bottom: 5px;
+}
+
+.cores{
+	width:20px; 
+	height: 20px;
+}
+
+.selecionado{
+	background-color: #F8F0A2 !important;
+}
+
+.sublinhado{
+	text-decoration: underline;
+}
+
+.alert{
+	margin-top: 20px;
+}
+
+.footer{
+	text-align: center;
 }
