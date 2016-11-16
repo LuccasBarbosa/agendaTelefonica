@@ -1,2 +1,2 @@
 # Agenda Telefônica
-AgendaTelefonica / Angular1.x
+AgendaTelefônica / Angular1.x
