@@ -18,9 +18,11 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
         <script src="js/angular.min.js"></script>
+        <script src="js/lib/angular-locale_pt-br.js"></script>
+        <script src="node_modules/angular-messages/angular-messages.min.js"></script>
         
         <script>
-            angular.module('helloWorld', []); //criou um módulo
+            angular.module('helloWorld', ["ngMessages"]); //criou um módulo
 
             //registrando o módulo
             angular.module('helloWorld').controller('helloWorldCtrl', function($scope){
@@ -28,18 +30,18 @@
 
                 //array de contatos
                 $scope.contatos = [
-                    {nome:'Lucas Barbosa', telefone: '99999-9988', cor: 'blue'},
-                    {nome:'Silvia Barbosa', telefone: '99999-9985', cor: 'yellow'},
-                    {nome:'Oscar Henrique', telefone: '99999-9986', cor: 'red'}
+                    {nome:'Lucas Barbosa', telefone: '99999-9988', data: new Date(), cor: 'blue'},
+                    {nome:'Silvia Barbosa', telefone: '99999-9985', data: new Date(), cor: 'yellow'},
+                    {nome:'Oscar Henrique', telefone: '99999-9986', data: new Date(), cor: 'red'}
                 ];
 
                 //array de operadoras
                 $scope.operadoras = [
-                    {nome: 'Vivo', codigo: 15, categoria: 'Celular'},
-                    {nome: 'Claro', codigo: 23, categoria: 'Celular'},
-                    {nome: 'Tim', codigo: 41, categoria: 'Celular'},
-                    {nome: 'Oi', codigo: 24, categoria: 'Fixo'},
-                    {nome: 'Embratel', codigo: 21, categoria: 'Fixo'},
+                    {nome: 'Vivo', codigo: 15, categoria: 'Celular', preco: 1},
+                    {nome: 'Claro', codigo: 23, categoria: 'Celular', preco: 2},
+                    {nome: 'Tim', codigo: 41, categoria: 'Celular', preco: 1},
+                    {nome: 'Oi', codigo: 24, categoria: 'Fixo', preco: 3},
+                    {nome: 'Embratel', codigo: 21, categoria: 'Fixo', preco: 1},
 
                 ];
 
@@ -69,6 +71,11 @@
 
                 };
 
+                $scope.ordenarPor = function(campo){
+                    $scope.criterioDeOrdenacao = campo;
+                    $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
+                }
+
                 //atribuindo classe para o selecionado
                 $scope.selecionado = 'selecionado';
                 $scope.selecionado = 'sublinhado';
@@ -88,20 +95,24 @@
         <div class="jumbotron">
             <h3>{{titulo}}</h3>
 
+            <input type="text" placeholder="Digite o que procura..." ng-model="criterioBusca" class="form-control">
+
             <table class="table table-striped" ng-show="contatos.length > 0">
                 <tr>
                     <th></th>
-                    <th>Nome</th>
-                    <th>Telefone</th>
+                    <th><a href="" ng-click="ordenarPor('nome')">Nome</a></th>
+                    <th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
                     <th>Operadora</th>
-                    <th></th>
+                    <!-- <th></th> cor-->
+                    <th>Data</th>
                 </tr>
-                <tr ng-class="{selecionado: contato.selecionado}" ng-repeat="contato in contatos">
+                <tr ng-class="{selecionado: contato.selecionado}" ng-repeat="contato in contatos | filter: criterioBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
                     <td><input type="checkbox" ng-model="contato.selecionado"></td>
-                    <td>{{contato.nome}}</td>
+                    <td>{{contato.nome | uppercase}}</td>
                     <td>{{contato.telefone}}</td>
                     <td>{{contato.operadora.nome}}</td>
-                    <td><div class="cores" ng-style="{'background-color': contato.cor}"></div></td>
+                    <td>{{contato.data | date :'dd/mm/yyyy'}}</td>
+                    <!-- <td><div class="cores" ng-style="{'background-color': contato.cor}"></div></td> -->
                     <!-- <td ng-repeat="(key,value) in contato">{{key +' - '+ value}}</td> -->
                 </tr>
             </table>
@@ -111,9 +122,9 @@
 
                 <input type="text" ng-model="contato.nome" class="form-control" name="nome" placeholder="Digite o nome..." ng-required="true" ng-minlength="10">
 
-                <input type="text" ng-model="contato.telefone" class="form-control" name="telefone" placeholder="Digite o telefone..." ng-required="true" ng-pattern="//" >
+                <input type="text" ng-model="contato.telefone" class="form-control" name="telefone" placeholder="Digite o telefone..." ng-required="true" ng-pattern="/^\d{4,5}-\d{4}$/" >
 
-                <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+                <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome + '('+(operadora.preco | currency) +')' group by operadora.categoria  for operadora in operadoras | orderBy:'nome'">
                     <option value="">Selecione uma operadora</option>
                 </select>
 
@@ -123,16 +134,22 @@
 
             </form>
 
-            <div ng-show="contatoForm.nome.$error.required && contatoForm.nome.$dirty" class="alert alert-danger">
-                <p>Preencha o nome!</p> <!--só mostra se o campo foi digitado -->
+            <div ng-messages="contatoForm.nome.$error" class="alert alert-danger">   
+                <div ng-message="required">
+                    <p>Preencha o nome!</p> <!--só mostra se o campo foi digitado -->
+                </div>
+
+                <div ng-message="minlength">
+                    <p>O campo nome deve ter no mínimo 10 caracteres!</p> <!--só mostra se o campo foi digitado -->
+                </div>
             </div>
 
-            <div ng-show="contatoForm.nome.$error.minlength" class="alert alert-danger">
-                <p>O campo nome deve ter no mínimo 10 caracteres!</p> <!--só mostra se o campo foi digitado -->
-            </div>
-
-            <div ng-show="contatoForm.telefone.$invalid && contatoForm.nome.$dirty" class="alert alert-danger">
+            <div ng-show="contatoForm.telefone.$error.required && contatoForm.nome.$dirty" class="alert alert-danger">
                 <p>Preencha o telefone</p> <!--só mostra se o campo foi digitado -->
+            </div> 
+
+            <div ng-show="contatoForm.telefone.$error.pattern" class="alert alert-danger">
+                <p>O campo telefone deve ter o formato de 99999-9999</p> <!--só mostra se o campo foi digitado -->
             </div>
 
         </div>
