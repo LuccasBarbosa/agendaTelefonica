@@ -34,14 +34,14 @@
 
                 //função para carregar contatos $http
                 var carregarContatos = function(){
-                    $http.get('js/contatos.js').success(function(data, status){
+                    $http.get('http://localhost:80/agendatelefonica.com/js/contatos.js').success(function(data, status){
                         $scope.contatos = data;
                     });
                 };
                 
                 //função para carregar operadoras $http
                 var carregarOperadoras = function(){
-                    $http.get('js/operadoras.js').success(function(data, status){
+                    $http.get('http://localhost:80/agendatelefonica.com/js/operadoras.js').success(function(data, status){
                         $scope.operadoras = data;
                     });
                 };
@@ -50,7 +50,7 @@
                 $scope.adicionarContato = function(contato){
                     // $scope.contatos.push(angular.copy(contato));
                     contato.data = new Date();
-                    $http.post('http://localhost/agendatelefonica.com/public_html/agendaTelefonica/agendaTelefonica/js/contatos.js', contato).success(function(data){
+                    $http.post('http://localhost:80/agendatelefonica.com/js/contatos.js', contato).success(function(data){
                         console.log(data);
                         delete $scope.contato;
                         $scope.contatoForm.$setPristine(); //volta os inputs como nunca tocados
